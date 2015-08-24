@@ -42,6 +42,14 @@ func createProjectCLI(c *cli.Context) {
 		os.Exit(1)
 	}
 
+	path, err := exec.LookPath("mcuser.py")
+	if err != nil {
+		fmt.Println("Unable to find mcuser.py in your path.")
+		os.Exit(1)
+	}
+
+	fmt.Println("Using mcuser.py at:", path)
+
 	projectName := c.Args()[0]
 	owner := c.String("owner")
 	if owner == "" {
