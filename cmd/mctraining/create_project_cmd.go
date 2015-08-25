@@ -48,7 +48,7 @@ func createProjectCLI(c *cli.Context) {
 	projectName := c.Args()[0]
 	owner := c.String("owner")
 	if owner == "" {
-		owner = projectName + "@mctraining.org"
+		owner = projectName + "@mc.org"
 	}
 
 	templateProjectName := c.String("template")
