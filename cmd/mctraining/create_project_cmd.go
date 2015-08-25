@@ -77,7 +77,7 @@ func createUser(user, projectName string) {
 }
 
 func runMCUser(user, projectName string) {
-	out, err := exec.Command("mcuser.py", "--email="+user, "--password='"+projectName+"'").Output()
+	out, err := exec.Command("mcuser.py", "--email="+user, "--password="+projectName).Output()
 	if err != nil {
 		fmt.Println("Unable to add user:", err)
 		os.Exit(1)
