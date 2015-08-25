@@ -7,7 +7,6 @@ import (
 
 	"github.com/codegangsta/cli"
 	r "github.com/dancannon/gorethink"
-	"github.com/materials-commons/mcstore/pkg/db/dai"
 	"github.com/materials-commons/mcstore/pkg/db/model"
 	"github.com/materials-commons/mcstore/pkg/db/schema"
 )
@@ -30,10 +29,6 @@ var (
 		},
 		Action: createProjectCLI,
 	}
-
-	rusers = dai.NewRUsers(session)
-	rprojs = dai.NewRProjects(session)
-	rfiles = dai.NewRFiles(session)
 )
 
 func createProjectCLI(c *cli.Context) {
@@ -56,23 +51,33 @@ func createProjectCLI(c *cli.Context) {
 		owner = projectName + "@mctraining.org"
 	}
 
-	templateProjectID := c.String("template")
+	templateProjectName := c.String("template")
 
-	createUser(owner)
+	templateProjectID := getTemplateProjectID(templateProjectName)
+
+	createUser(owner, projectName)
 	projectID := createProject(projectName, owner)
 	addFilesFromTemplateProject(templateProjectID, projectID, owner)
 }
 
-func createUser(user string) {
-	if _, err := rusers.ByID(user); err != nil {
-		// User not found so create a new one
-		runMCUser(user)
+func getTemplateProjectID(name string) string {
+	project, err := rprojs.ByName(name, "admin@mc.org")
+	if err != nil {
+		fmt.Printf("Unable to find template project %s: %s\n", name, err)
 	}
 
+	return project.ID
 }
 
-func runMCUser(user string) {
-	out, err := exec.Command("mcuser.py", "--email="+user, "--password='"+user+"'").Output()
+func createUser(user, projectName string) {
+	if _, err := rusers.ByID(user); err != nil {
+		// User not found so create a new one
+		runMCUser(user, projectName)
+	}
+}
+
+func runMCUser(user, projectName string) {
+	out, err := exec.Command("mcuser.py", "--email="+user, "--password='"+projectName+"'").Output()
 	if err != nil {
 		fmt.Println("Unable to add user:", err)
 		os.Exit(1)

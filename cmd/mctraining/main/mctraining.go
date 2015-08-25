@@ -7,6 +7,10 @@ import (
 	"github.com/materials-commons/mctraining/cmd/mctraining"
 )
 
+func init() {
+	mctraining.DBConnect()
+}
+
 func main() {
 	app := cli.NewApp()
 	app.Version = "1.0.0"
@@ -19,6 +23,6 @@ func main() {
 	app.Commands = []cli.Command{
 		mctraining.CreateCommand,
 	}
-	mctraining.DBConnect()
+
 	app.Run(os.Args)
 }
